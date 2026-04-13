@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
+import resumeRouter from './routes/resumeRoutes.js';
+import aiRouter from './routes/aiRoutes.js';
 
 dotenv.config();
 
@@ -21,6 +23,9 @@ app.get('/',(req,res)=>{res.send("Server is Live...")})
 app.use('/api/users', userRouter);
 
 app.use('/api/resumes', resumeRouter);
+
+app.use('/api/ai',aiRouter);
+
 
 
 app.listen(PORT, ()=>{

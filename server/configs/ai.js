@@ -1,0 +1,10 @@
+import OpenAI from 'openai';
+import dotenv from 'dotenv';
+
+const ai=new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+    model: process.env.OPENAI_MODEL,
+});
+
+export default ai;
