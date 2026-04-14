@@ -1,8 +1,14 @@
 import React from "react";
 import { Mail, Lock, User} from "lucide-react";
+import { useDispatch } from "react-redux";
+import api from "../configs/api.js";
+import { login } from "../app/features/authSlice.js";
+import toast from "react-hot-toast";
 
 
 const Login =()=>{
+
+    const dispatch=useDispatch();//get the dispatch function from the redux store
 
     const query = new URLSearchParams(window.location.search)
     const urlState = query.get('state')
@@ -16,6 +22,19 @@ const Login =()=>{
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        try {
+
+            const {data} = await api.post(`/api/users/${state}`, formData);
+            dispatch(login(data));
+            localStorage.setItem('token', data.token);
+            toast.success(data.message);
+
+        }
+        catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message || error.message || "Something went wrong");
+        }
 
     }
 

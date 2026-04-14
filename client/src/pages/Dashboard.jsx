@@ -4,8 +4,15 @@ import { dummyResumeData } from "../assets/assets";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import api from "../configs/api";
 
 const Dashboard =()=>{
+
+  const {user,token}=useSelector(state=>state.auth);
+
+
   //create colors
   const colors=["#5A9B82", "#6D96B5", "#897AB0", "#B57E91", "#BAA072", "#AC7269"]
   //loading all dummy resumes added in assets folder and setting it to the state variable allResumes using useEffect and useState hooks
@@ -18,17 +25,53 @@ const Dashboard =()=>{
   //createresume functionwhich will be called when the user clicks on the create resume button and it will create a new resume
 
   const createResume = async(event)=>{
-    event.preventDefault()
-    setShowCreateResume(false)
-    navigate(`/app/builder/res123`) //navigate to the resume builder page with the id of the newly created resume
+
+    //this was for dummy data
+    // event.preventDefault()
+    // setShowCreateResume(false)
+    // navigate(`/app/builder/res123`) //navigate to the resume builder page with the id of the newly created resume
+
+
+
+    //this is for actual data
+    try{
+
+      event.preventDefault();
+      const {data} =await api.post('/api/resumes/create',{title}, {headers:{Authorization:token}})
+
+      setAllResumes([...allResumes,data.resume])
+      setTitle('');
+      setShowCreateResume(false);
+      navigate(`/app/builder/${data.resume._id}`)
+
+
+    }catch(error){
+      toast.error(error?.response?.data?.message || error.message || "Something went wrong")
+    }
 
   }  
 
   //upload resume function
   const uploadResume = async(event)=>{
-    event.preventDefault()
-    setShowUploadResume(false)
-      navigate(`/app/builder/res123`) //navigate to the resume builder page with the id of the newly created resume
+    // event.preventDefault()
+    // setShowUploadResume(false)
+    // navigate(`/app/builder/res123`) //navigate to the resume builder page with the id of the newly created resume
+
+    try{
+
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('resume', resume);
+      
+
+    }
+    catch(error){
+
+      toast.error(error?.response?.data?.message || error.message || "Something went wrong")
+
+
+    }
 
 
   } 
@@ -69,7 +112,7 @@ const Dashboard =()=>{
 
         {/* this is heading part of dashboard page */}
         <p className='text-2xl font-medium text-gray-900 mb-2 bg-gradient-to-r from-green-500 to-green-700 bg-clip-text text-transparent sm:hidden'>
-          Welcome, John Doe!
+          Welcome, {user?.name}!
         </p>
 
         {/* these are two buttons for creating new resume and upkoad the existing resume  */}

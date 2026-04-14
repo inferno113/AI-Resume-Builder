@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route } from "react-router-dom";
 import Home from "./pages/Home";
 import { Routes } from "react-router-dom";
@@ -7,10 +7,52 @@ import ResumeBuilder from "./pages/ResumeBuilder";
 import Preview from "./pages/Preview";
 import Login from "./pages/Login";
 import Layout from "./pages/Layout";
+import { useDispatch } from "react-redux";
+import { Axis3DIcon } from "lucide-react";
+import api from "./configs/api";
+import { login, setLoading } from "./app/features/authSlice";
+import {Toaster} from "react-hot-toast";
 
 const App =()=>{
+
+  const dispatch=useDispatch();//get the dispatch function from the redux store
+
+  //get user data 
+  const getUserData=async()=>{
+    const token=localStorage.getItem('token');
+
+    try{
+
+      if(token){
+        const {data}=await api.get('/api/user/data',{headers:{Authorization:`Bearer ${token}`}});
+
+        if(data.user){
+          dispatch(login({token,user:data.user}));
+        }
+
+        dispatch(setLoading(false));
+
+      }
+      else{
+        dispatch(setLoading(false));
+      }
+
+    }
+    catch(error){
+      dispatch(setLoading(false));
+      console.log(error.message);
+      
+    }
+
+  }
+
+  useEffect(()=>{
+    getUserData();
+  },[]);
+
   return(
-    <div>
+    <>
+    <Toaster/>
       <Routes>  
         <Route path='/' element={<Home/>}/>  
         <Route path='app' element={<Layout/>}>
@@ -19,10 +61,9 @@ const App =()=>{
         </Route>
 
         <Route path='app/view/:resumeId' element={<Preview/>}/> 
-        <Route path='view/:resumeId' element={<Preview/>}/> 
-        <Route path='login' element={<Login/>}/>
+        <Route path='view/:resumeId' element={<Preview/>}/>
       </Routes>
-    </div>
+    </>
   )
 }
 

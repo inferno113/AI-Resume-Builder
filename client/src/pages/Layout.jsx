@@ -1,14 +1,34 @@
-import React from "react";
+import React, { use } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/navbar.jsx";
+import { useSelector } from "react-redux";
+import Loader from "../components/Loader.jsx";
+import Login from "./Login.jsx";
 
 const Layout =()=>{
+
+  //check if user is logged in, if not redirect to login page
+
+  const {user,loading}=useSelector(state=>state.auth);
+
+  if(loading){
+    return <Loader/>
+  }
+
+
   return(
     <div>
-        <div className=" min-h-screen bg-gray-50">
+
+      {
+        //checking if user logged in, if yes show the dashboard, if not show the login page
+        user ? (<div className=" min-h-screen bg-gray-50">
             <Navbar />
             <Outlet />
         </div>
+        ) : <Login/>
+      }
+
+        
 
     </div>
   )
