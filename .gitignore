@@ -1,0 +1,49 @@
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+client/.env
+server/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+coverage/
+
+# Vite cache
+client/.vite/
+
+# Runtime and temp files
+*.pid
+*.pid.lock
+*.seed
+*.tmp
+*.temp
+
+# Local databases and dumps
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+*.bak
+*.dump
+*.sql
+
+# IDE files
+.vscode/
+.idea/

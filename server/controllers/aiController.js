@@ -172,7 +172,7 @@ export const uploadResume= async(req,res)=>{
                 }
             ],
 
-            reponse_format:{
+            response_format:{
                 type:"json_object",
             }
 
@@ -195,7 +195,7 @@ export const uploadResume= async(req,res)=>{
 
     catch(error){
 
-        return res.status(500).json({message:"Failed to enhance professional summary",error:error.message});
+        return res.status(500).json({message:"Failed to upload resume",error:error.message});
 
     }
 

@@ -111,13 +111,17 @@ export const updateResume= async(req ,res)=>{
     try{
 
         const userId=req.userId;
-        const {resumeId, resumeData,removeBackground}=req.body;
+        const {resumeId, resumeData,removeBackground, title}=req.body;
 
         //using multer middleware to get image file from request
         const image=req.file;
 
         //update resume
-        let resumeDataCopy=JSON.parse(resumeData);
+        let resumeDataCopy = resumeData ? JSON.parse(JSON.stringify(resumeData)) : {};
+
+        if(typeof title === 'string'){
+            resumeDataCopy.title = title;
+        }
 
 
         if(image){
@@ -136,10 +140,14 @@ export const updateResume= async(req ,res)=>{
 
             })
 
+            if(!resumeDataCopy.personal_info){
+                resumeDataCopy.personal_info = {};
+            }
+
             resumeDataCopy.personal_info.image=response.url;
         }
 
-        const resume=await Resume.findOneAndUpdate({userId, _id:resumeId}, {new: true});
+        const resume=await Resume.findOneAndUpdate({userId, _id:resumeId}, resumeDataCopy, {new: true});
 
         return res.status(200).json({message:"Resume updated successfully",resume});
         
