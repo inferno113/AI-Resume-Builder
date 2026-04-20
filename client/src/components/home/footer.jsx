@@ -10,15 +10,17 @@ const Footer =()=>{
                         src="logo.svg" />
                 </div>
                 <p className="text-center max-w-xl text-sm font-normal leading-relaxed">
-
-                    We welcome your feedback and suggestions to help us improve our product. If you have any questions or concerns, please don't hesitate to contact us.
-
-                    
+                    AI Resume Builder helps you create cleaner, role-focused resumes with AI guidance, modern templates, and live preview editing.
                 </p>
+                <div className="flex flex-wrap justify-center gap-5 mt-6 text-sm text-slate-600">
+                    <a href="#features" className="hover:text-green-700 transition-colors">Features</a>
+                    <a href="#testimonials" className="hover:text-green-700 transition-colors">Testimonials</a>
+                    <a href="#cta" className="hover:text-green-700 transition-colors">Get Started</a>
+                </div>
             </div>
             <div className="border-t border-slate-200">
                 <div className="max-w-7xl mx-auto px-6 py-6 text-center text-sm font-normal">
-                    <a href="/">Ai Resume Builder</a> ©2026. All rights reserved.
+                    <a href="/">AI Resume Builder</a> ©2026. All rights reserved.
                 </div>
             </div>
         </footer>

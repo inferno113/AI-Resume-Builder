@@ -24,7 +24,7 @@ const Hero =()=>{
             <div className="min-h-screen pb-20">
                 {/* Navbar */}
                 <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-40 text-sm">
-                    <a href="https://prebuiltui.com">
+                    <a href="/">
                         <img src="/logo.svg" alt="Logo" className="h-11 w-auto"/>
                     </a>
 
@@ -32,7 +32,7 @@ const Hero =()=>{
                         <a href="#" className="hover:text-green-600 transition">Home</a>
                         <a href="#features" className="hover:text-green-600 transition">Features</a>
                         <a href="#testimonials" className="hover:text-green-600 transition">Testimonials</a>
-                        <a href="#cta" className="hover:text-green-600 transition">Contact</a>
+                        <a href="#cta" className="hover:text-green-600 transition">Get Started</a>
                     </div>
 
                     <div className="flex gap-2">
@@ -63,7 +63,7 @@ const Hero =()=>{
                     <a href="/" className="text-white">Home</a>
                     <a href="#features" className="text-white">Features</a>
                     <a href="#testimonials" className="text-white">Testimonials</a>
-                    <a href="#cta" className="text-white">Contact</a>
+                    <a href="#cta" className="text-white">Get Started</a>
                     <button onClick={() => setMenuOpen(false)} className="active:ring-3 active:ring-white aspect-square size-10 p-1 items-center justify-center bg-green hover:green transition text-white rounded-md flex" >
                         X
                     </button>
@@ -90,31 +90,31 @@ const Hero =()=>{
                                 ))}
                             </div>
                             <p className="text-sm text-gray-700">
-                                Used by 10,000+ users
+                                Trusted by 12,000+ job seekers
                             </p>
                         </div>
                     </div>
 
                     {/* Headline + CTA */}
                     <h1 className="text-5xl md:text-6xl font-semibold max-w-5xl text-center mt-4 md:leading-[70px]">
-                        Build Job-Winning Resumes with <span className=" bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent text-nowrap">AI Powered</span> Resume Builder 
+                        Build role-ready resumes faster with <span className=" bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent text-nowrap">AI Powered</span> Resume Builder 
                     </h1>
 
-                    <p className="max-w-md text-center text-base my-7">Create ATS-optimized resumes in minutes using AI. Get smarter suggestions, better formatting, and stand out to recruiters instantly.</p>
+                    <p className="max-w-md text-center text-base my-7">Write stronger summaries, improve experience points, and customize templates in one place so your resume is ready for every application.</p>
 
                     {/* CTA Buttons */}
                     <div className="flex items-center gap-4 ">
                         <Link to='/app' className="bg-green-600 hover:bg-green-700 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-green-700 flex items-center transition-colors">
-                            Get started
+                            Start building
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-1 size-4" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                         </Link>
                         <button className="flex items-center gap-2 border border-slate-400 hover:bg-green-50 transition rounded-full px-7 h-12 text-slate-700">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-video size-5" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                            <span>Try demo</span>
+                            <span>View demo</span>
                         </button>
                     </div>
 
-                    <p className="py-6 text-slate-600 mt-14">Trusted by students & professionals landing interviews</p>
+                    <p className="py-6 text-slate-600 mt-14">Used by students, freshers, and professionals preparing for interviews</p>
 
                     <div className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
                         {companiesLogo.map((company, index) => (
