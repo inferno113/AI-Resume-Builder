@@ -195,7 +195,12 @@ export const uploadResume= async(req,res)=>{
 
     catch(error){
 
-        return res.status(500).json({message:"Failed to upload resume",error:error.message});
+        const providerMessage =
+            error?.error?.message ||
+            error?.response?.data?.error?.message ||
+            error?.message;
+
+        return res.status(500).json({message:"Failed to upload resume",error:providerMessage});
 
     }
 

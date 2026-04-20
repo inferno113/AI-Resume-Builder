@@ -1,7 +1,33 @@
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import React from "react";
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 
 const ProfessionalSummary = ({data, onChange, setResumeData})=>{
+
+    const {token} = useSelector((state)=>state.auth);
+
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const generateSummary= async()=>{
+        try{
+            setIsGenerating(true);
+            const prompt=`Enhance my profesional summary: "${data}"`;
+            const response= await api.post("/api/ai/enhance-pro-sum", {userContent : prompt}, {headers: {Authorization:token}} )
+
+            setResumeData(prev=>({...prev, professional_summary: response.data.enhancedContent}));
+
+
+        }
+        catch(error){
+            toast.error(error?.response?.data?.message || error.message)
+        }
+        finally{
+            setIsGenerating(false);
+        }
+    }
 
     return(
 
@@ -13,10 +39,13 @@ const ProfessionalSummary = ({data, onChange, setResumeData})=>{
                     <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">Professional Summary</h3>
                     <p className="text-sm text-gray-500">Add a brief overview of your professional background and key accomplishments.</p>
                 </div>
-                <button className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hhover:bg-purple-200 transition-colors disabled:opacity-50">
-                    <Sparkles className="size-5 text-yellow-400"/>
+                <button disabled={isGenerating} onClick={generateSummary} className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hhover:bg-purple-200 transition-colors disabled:opacity-50">
+                    {isGenerating ? (<Loader2 className="size-4 animate-spin" />) : (<Sparkles className="size-5 text-yellow-400"/>)}
 
-                    Ai Enhance
+                    {isGenerating ? "Generating..." : " Ai Enhance"}
+
+                    
+
                 </button>
 
             </div>

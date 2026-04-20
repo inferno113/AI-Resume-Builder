@@ -32,7 +32,7 @@ export const deleteResume= async(req ,res)=>{
     try{
 
         const userId=req.userId;
-        const resumeId=req.params.id;
+        const resumeId=req.params.resumeId;
         //delete resume
         await Resume.findOneAndDelete({userId, _id:resumeId});
         //return successful response with new resume data
@@ -53,7 +53,7 @@ export const getResumeById= async(req ,res)=>{
     try{
 
         const userId=req.userId;
-        const resumeId=req.params.id;
+        const resumeId=req.params.resumeId;
 
         const resume= await Resume.findOne({userId, _id:resumeId});
 
@@ -117,7 +117,12 @@ export const updateResume= async(req ,res)=>{
         const image=req.file;
 
         //update resume
-        let resumeDataCopy = resumeData ? JSON.parse(JSON.stringify(resumeData)) : {};
+        let resumeDataCopy;
+        if(typeof resumeData === 'string'){
+            resumeDataCopy=await JSON.parse(resumeData);
+        }else{
+            resumeDataCopy=structuredClone(resumeData);
+        }
 
         if(typeof title === 'string'){
             resumeDataCopy.title = title;
@@ -128,7 +133,7 @@ export const updateResume= async(req ,res)=>{
 
             const imageBufferData=fs.createReadStream(image.path);
 
-            const response = await imagekit.upload({
+            const response = await imagekit.files.upload({
                 file:imageBufferData,
                 fileName:'resume.png',
                 folder: 'user-resumes',

@@ -12,11 +12,18 @@ import ExperienceForm from "../components/ExperienceForm";
 import EducationForm from "../components/EducationForm";
 import ProjectForm from "../components/ProjectForm";
 import SkillsForm from "../components/SkillsForm";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 
 
 const ResumeBuilder =()=>{
 
   const {resumeId}= useParams();
+
+  const {token}=useSelector((state)=>state.auth);
+
+
 
   const [resumeData, setResumeData] = useState({
     _id: '',
@@ -35,11 +42,25 @@ const ResumeBuilder =()=>{
 
   const loadExistingResume = async () => {
 
-    const resume = dummyResumeData.find((item) => item._id === resumeId);
+    try{
 
-    if(resume){
-      setResumeData(resume);
-      document.title = resume.title + " - Resume Builder";
+      const {data}= await api.get('/api/resumes/get/'+ resumeId,{
+        headers:{
+          Authorization: token
+        }
+      })
+
+
+      if(data.resume){
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+
+    }
+    catch(error){
+
+      console.log(error.message);
+
     }
 
   }
@@ -68,7 +89,29 @@ const ResumeBuilder =()=>{
 
   //function to toggle resume visibility
   const changeResumeVisibility = async()=>{
-    setResumeData({...resumeData,public: !resumeData.public});
+    //for dummy data
+    // setResumeData({...resumeData,public: !resumeData.public});
+
+    //for real data
+    try{
+
+      const formdata = new FormData();
+      formdata.append('resumeId', resumeData._id);
+      formdata.append("resumeData", JSON.stringify({public: !resumeData.public}));
+
+      const {data}= await api.put('/api/resumes/update/', formdata,{headers:{
+        Authorization: token
+      }})
+
+      setResumeData({...resumeData, public: !resumeData.public});
+      toast.success(data.message);
+
+    }
+    catch(error){
+
+      console.log(error.message);
+
+    }
 
   }
 
@@ -92,6 +135,44 @@ const ResumeBuilder =()=>{
   const downloadResume =()=>{
     window.print();
   }
+
+  //function to handle resume update when user click on save changes button
+
+  const saveResume = async()=>{
+
+    try{
+
+      let updatedResumeData = structuredClone(resumeData);
+
+      //remove image from updatedResumeData before sending to backend if removeBackground is true
+
+      if(typeof resumeData.personal_info.image==='object'){
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formdata = new FormData();
+      formdata.append('resumeId', resumeId);
+      formdata.append('resumeData', JSON.stringify(updatedResumeData));
+      removeBackground && formdata.append('removeBackground', 'yes');
+
+      typeof resumeData.personal_info.image === 'object' && formdata.append('image', resumeData.personal_info.image);
+
+      const {data} = await api.put('/api/resumes/update', formdata, {
+        headers:{
+          Authorization: token
+        }
+      })
+
+      setResumeData(data.resume) 
+
+
+    }
+    catch(error){
+      throw new Error(error?.response?.data?.message || error.message || 'Failed to save resume');
+    }
+
+  }
+
   
 
   return(
@@ -194,7 +275,7 @@ const ResumeBuilder =()=>{
               </div>
 
               {/* button for savin the resume */}
-              <button className="bg-gradient-to-br from-green-100 to-green-200 ring-green-200 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm">
+              <button onClick={()=>{toast.promise(saveResume(),{loading: 'Saving...', success: 'Changes saved successfully'})}} className="bg-gradient-to-br from-green-100 to-green-200 ring-green-200 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm">
                 Save Changes
               </button>
 
