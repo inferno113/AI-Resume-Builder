@@ -1,6 +1,5 @@
 import { Plus, Sparkle, X } from "lucide-react";
 import React from "react";
-import { dummyResumeData } from "../assets/assets";
 
 const SkillsForm = ({data, onChange})=>{
 

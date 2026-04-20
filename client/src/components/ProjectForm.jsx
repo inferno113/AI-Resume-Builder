@@ -1,7 +1,6 @@
 import { Trash2 } from "lucide-react";
 import React from "react";
 import { Plus } from "lucide-react";
-import { dummyResumeData } from "../assets/assets";
 
 const ProjectForm = ({data, onChange})=>{
 

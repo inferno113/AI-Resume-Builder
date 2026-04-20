@@ -1,7 +1,6 @@
 import { GraduationCap } from "lucide-react";
 import React from "react";
 import { Plus, Trash } from "lucide-react";
-import { dummyResumeData } from "../assets/assets";
 
 const EducationForm = ({data, onChange})=>{
 

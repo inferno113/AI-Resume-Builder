@@ -13,9 +13,13 @@ const ProfessionalSummary = ({data, onChange, setResumeData})=>{
 
     const generateSummary= async()=>{
         try{
+            if(!data?.trim()){
+                toast.error("Please enter a summary before enhancing");
+                return;
+            }
+
             setIsGenerating(true);
-            const prompt=`Enhance my profesional summary: "${data}"`;
-            const response= await api.post("/api/ai/enhance-pro-sum", {userContent : prompt}, {headers: {Authorization:token}} )
+            const response= await api.post("/api/ai/enhance-pro-sum", {userContent : data}, {headers: {Authorization:token}} )
 
             setResumeData(prev=>({...prev, professional_summary: response.data.enhancedContent}));
 

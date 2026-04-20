@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Route } from "react-router-dom";
 import Home from "./pages/Home";
 import { Routes } from "react-router-dom";
@@ -16,7 +16,7 @@ const App =()=>{
   const dispatch=useDispatch();//get the dispatch function from the redux store
 
   //get user data 
-  const getUserData=async()=>{
+  const getUserData=useCallback(async()=>{
     const token=localStorage.getItem('token');
 
     try{
@@ -42,11 +42,11 @@ const App =()=>{
       
     }
 
-  }
+  }, [dispatch])
 
   useEffect(()=>{
     getUserData();
-  },[]);
+  },[getUserData]);
 
   return(
     <>

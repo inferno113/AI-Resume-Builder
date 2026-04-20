@@ -1,8 +1,5 @@
-import { FilePen, FilePenIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon, XIcon } from "lucide-react";
-import React, { use } from "react";
-import { dummyResumeData } from "../assets/assets";
-import { useEffect } from "react";
-import { useState } from "react";
+import { FilePenIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloudIcon, XIcon } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -17,13 +14,19 @@ const Dashboard =()=>{
   const {user,token}=useSelector(state=>state.auth);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [allResumes, setAllResumes] = useState([])
+  const [showCreateResume, setShowCreateResume] = useState(false)
+  const [showUploadResume, setShowUploadResume] = useState(false)
+  const [title, setTitle] = useState('')
+  const [resume, setResume] = useState(null)
+  const [editResumeId, setEditResumeId] = useState('')
 
   //create colors
   const colors=["#5A9B82", "#6D96B5", "#897AB0", "#B57E91", "#BAA072", "#AC7269"]
   //loading all dummy resumes added in assets folder and setting it to the state variable allResumes using useEffect and useState hooks
 
 
-  const loadAllResumes = async()=>{
+  const loadAllResumes = useCallback(async()=>{
 
     //for dummy data
     // setAllResumes(dummyResumeData)
@@ -39,7 +42,7 @@ const Dashboard =()=>{
     }
 
 
-  }
+  }, [token])
 
   const navigate = useNavigate()
 
@@ -151,17 +154,11 @@ const Dashboard =()=>{
   
 
   useEffect(()=>{
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAllResumes();
-  }, [])
+  }, [loadAllResumes])
 
   //state variables for showing create resume form and upload resume form and also for storing the title and resume data of the resume being created or edited
-
-  const [allResumes, setAllResumes] = useState([])
-  const [showCreateResume, setShowCreateResume] = useState(false)
-  const [showUploadResume, setShowUploadResume] = useState(false)
-  const [title, setTitle] = useState('')
-  const [resume, setResume] = useState(null)
-  const [editResumeId, setEditResumeId] = useState('')
 
 
 

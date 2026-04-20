@@ -40,7 +40,11 @@ const ExperienceForm = ({data, onChange})=>{
     const generateDescription= async(index)=>{
         setIsGeneratingIndex(index);
         const experience = data[index];
-        const prompt = `Enhance this job description: ${experience.description} for the position of ${experience.position} at ${experience.company}`;
+        const prompt = [
+            `Position: ${experience.position}`,
+            `Company: ${experience.company}`,
+            `Current description: ${experience.description}`,
+        ].join("\n");
 
 
         try{

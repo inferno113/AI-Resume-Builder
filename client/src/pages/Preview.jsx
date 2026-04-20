@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -18,7 +18,7 @@ const Preview =()=>{
 
   const [resumeData, setResumeData] = useState(null);
 
-  const loadResume=async()=>{
+  const loadResume=useCallback(async()=>{
     setIsLoading(true);
     setErrorMessage("");
 
@@ -43,11 +43,11 @@ const Preview =()=>{
     finally{
       setIsLoading(false);
     }
-  }
+  }, [pathname, resumeId, token])
 
   useEffect(()=>{
     loadResume();
-  }, [resumeId, pathname, token])
+  }, [loadResume])
 
   //but there will be a flash of empty content before data loads, so we can show a loading state
 

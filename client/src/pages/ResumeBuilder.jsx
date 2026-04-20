@@ -39,31 +39,6 @@ const ResumeBuilder =()=>{
 
   })
 
-  const loadExistingResume = async () => {
-
-    try{
-
-      const {data}= await api.get('/api/resumes/get/'+ resumeId,{
-        headers:{
-          Authorization: token
-        }
-      })
-
-
-      if(data.resume){
-        setResumeData(data.resume);
-        document.title = data.resume.title;
-      }
-
-    }
-    catch(error){
-
-      console.log(error.message);
-
-    }
-
-  }
-
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [removeBackground, setRemoveBackground] = useState(false);
 
@@ -81,10 +56,34 @@ const ResumeBuilder =()=>{
   const activeSection = sections[activeSectionIndex];
 
   useEffect(()=>{
+    let isMounted = true;
 
-    loadExistingResume();
+    const loadExistingResume = async () => {
+      try{
+        const {data}= await api.get('/api/resumes/get/'+ resumeId,{
+          headers:{
+            Authorization: token
+          }
+        })
 
-  },[resumeId])
+        if(isMounted && data.resume){
+          setResumeData(data.resume);
+          document.title = data.resume.title;
+        }
+      }
+      catch(error){
+        console.log(error.message);
+      }
+    };
+
+    if(token){
+      loadExistingResume();
+    }
+
+    return ()=>{
+      isMounted = false;
+    };
+  },[resumeId, token])
 
   //function to toggle resume visibility
   const changeResumeVisibility = async()=>{
