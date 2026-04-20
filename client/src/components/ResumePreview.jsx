@@ -28,7 +28,7 @@ const ResumePreview = ({data,template,accentColor,classes=""})=>{
 
             </div>
 
-            <style jsx>
+            <style>
                 
                 {`
                     @page{
@@ -37,7 +37,7 @@ const ResumePreview = ({data,template,accentColor,classes=""})=>{
 
                     }
                     @media print{
-                        htmml, body{
+                        html, body{
                             width: 8.5in;
                             height: 11in;
                             overflow: hidden;}

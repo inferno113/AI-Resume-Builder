@@ -69,13 +69,13 @@ const ExperienceForm = ({data, onChange})=>{
     return (
         <div className="space-y-6">
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
 
                 <div>
-                    <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">Professional Experience</h3>
-                    <p className="text-sm text-gray-500">Add details about your work.</p>
+                    <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">Professional Experience</h3>
+                    <p className="text-sm text-slate-600">Add role details with outcomes and measurable impact.</p>
                 </div>
-                <button onClick={addExperience} className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hhover:bg-purple-200 transition-colors ">
+                <button onClick={addExperience} className="flex items-center gap-2 px-3.5 py-2 text-sm bg-violet-100 text-violet-700 rounded-xl hover:bg-violet-200 transition-colors">
                     <Plus className="size-5"/>
                     Add Experience
                 </button>
@@ -84,8 +84,8 @@ const ExperienceForm = ({data, onChange})=>{
             
 
             {data.length===0 ? (
-                <div className="text-center py-8 text-gray-500">
-                    <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300"/>
+                <div className="text-center py-8 text-slate-500 border border-slate-200 rounded-xl bg-slate-50/60">
+                    <Briefcase className="w-12 h-12 mx-auto mb-3 text-slate-300"/>
                     <p>No professional experience added yet.</p>
                     <p>Click "Add Experience" to start building your resume.</p> 
                 </div>
@@ -93,48 +93,48 @@ const ExperienceForm = ({data, onChange})=>{
                 <div className="space-y-4">
 
                     { data.map((experience, index)=>(
-                        <div key={index} className="border border-gray-300 rounded-lg p-4 space-y-3">
+                        <div key={index} className="border border-slate-200 rounded-xl p-4 space-y-3 bg-white">
 
                             <div className="flex justify-between items-start">
-                                <h4>Experience #{index+1}</h4>
-                                <button onClick={()=>removeExperience(index)}className="text-red-500 hover:text-red-700 transition-colors" >
+                                <h4 className="font-medium text-slate-800">Experience #{index+1}</h4>
+                                <button onClick={()=>removeExperience(index)}className="text-red-500 hover:text-red-700 transition-colors" aria-label="Remove experience" >
                                     <Trash className="size-4" />
                                 </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-3">
 
-                                <input className="px-3 py-2 text-sm rounded-lg" type="text" placeholder="Company" value={experience.company || ""} onChange={(e)=>updateExperience(index, "company", e.target.value)} />
+                                <input className="px-3 py-2.5 text-sm rounded-lg border border-slate-300" type="text" placeholder="Company" value={experience.company || ""} onChange={(e)=>updateExperience(index, "company", e.target.value)} />
 
-                                <input className="px-3 py-2 text-sm rounded-lg" type="text" placeholder="Job Title" value={experience.position || ""} onChange={(e)=>updateExperience(index, "position", e.target.value)} />
+                                <input className="px-3 py-2.5 text-sm rounded-lg border border-slate-300" type="text" placeholder="Job Title" value={experience.position || ""} onChange={(e)=>updateExperience(index, "position", e.target.value)} />
 
-                                <input className="px-3 py-2 text-sm rounded-lg" type="month" placeholder="Start Date" value={experience.start_date || ""} onChange={(e)=>updateExperience(index, "start_date", e.target.value)} />
+                                <input className="px-3 py-2.5 text-sm rounded-lg border border-slate-300" type="month" placeholder="Start Date" value={experience.start_date || ""} onChange={(e)=>updateExperience(index, "start_date", e.target.value)} />
 
-                                <input  disabled={experience.is_current} className="px-3 py-2 text-sm rounded-lg disabled:bg-gray-100" type="month" placeholder="End Date" value={experience.end_date || ""} onChange={(e)=>updateExperience(index, "end_date", e.target.value)} />
+                                <input  disabled={experience.is_current} className="px-3 py-2.5 text-sm rounded-lg border border-slate-300 disabled:bg-gray-100" type="month" placeholder="End Date" value={experience.end_date || ""} onChange={(e)=>updateExperience(index, "end_date", e.target.value)} />
                                 
                             </div>
 
-                            <label className="flex items-center gap-2">
-                                <input type="checkbox" checked={experience.is_current || false} onChange={(e)=>updateExperience(index, "is_current", e.target.checked ? true: false)} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                            <label className="flex items-center gap-2 text-sm text-slate-700">
+                                <input type="checkbox" checked={experience.is_current || false} onChange={(e)=>updateExperience(index, "is_current", e.target.checked ? true: false)} className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-300"/>
                                 I currently work here
                             </label>
 
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
 
-                                    <label htmlFor="" className="text-sm font-medium text-gray-700">
+                                    <label className="text-sm font-medium text-slate-700">
                                         Job Description
                                     </label>
-                                    <button onClick={() => generateDescription(index)} disabled={isGeneratingIndex === index || !experience.position || !experience.company} className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transitio-colors disabled:opacity-50">
+                                    <button onClick={() => generateDescription(index)} disabled={isGeneratingIndex === index || !experience.position || !experience.company} className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 transition-colors disabled:opacity-50">
 
                                         {isGeneratingIndex === index ? (<Loader2 className="w-3 h-3 animate-spin text-purple-800"/>) : (<Sparkles className="w-3 h-3 text-purple-800"/>)}
 
-                                        {isGeneratingIndex === index ? "Generating..." : 'Ai Enhance'}
+                                        {isGeneratingIndex === index ? "Enhancing..." : 'AI Enhance'}
                                         
                                     </button>
 
                                 </div>
 
-                                <textarea  placeholder="Description of your role and achievements" rows={4} className="w-full text-sm px-3 py-2 rounded-lg resize-none" value={experience.description || ""}  onChange={(e)=> updateExperience(index, "description", e.target.value)} />
+                                <textarea  placeholder="Describe your responsibilities and outcomes with measurable impact..." rows={4} className="w-full text-sm px-3 py-2.5 rounded-lg resize-none border border-slate-300" value={experience.description || ""}  onChange={(e)=> updateExperience(index, "description", e.target.value)} />
                             </div>
 
                         </div>
