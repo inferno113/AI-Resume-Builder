@@ -1,12 +1,58 @@
-import dotenv from "dotenv";
-import ai from "../configs/ai.js";
 import Resume from "../models/Resume.js";
+import { generateJsonContent, generateTextContent } from "../services/aiService.js";
 
+const toSafeString = (value) => (typeof value === "string" ? value.trim() : "");
 
-//controller for enhancing professional summary content using OpenAI API
-// POST : /api/ai/generate
+const toSafeStringArray = (value) =>
+    Array.isArray(value)
+        ? value.map((item) => toSafeString(item)).filter(Boolean)
+        : [];
 
-import { model } from "mongoose";
+const normalizeResumeData = (rawData = {}) => {
+    const personalInfo = rawData.personal_info || rawData.personalInfo || {};
+    const experience = Array.isArray(rawData.experience) ? rawData.experience : [];
+    const project = Array.isArray(rawData.project)
+        ? rawData.project
+        : Array.isArray(rawData.projects)
+        ? rawData.projects
+        : [];
+    const education = Array.isArray(rawData.education) ? rawData.education : [];
+
+    return {
+        professional_summary: toSafeString(rawData.professional_summary),
+        skills: toSafeStringArray(rawData.skills),
+        personal_info: {
+            image: toSafeString(personalInfo.image),
+            full_name: toSafeString(personalInfo.full_name),
+            profession: toSafeString(personalInfo.profession),
+            phone: toSafeString(personalInfo.phone),
+            email: toSafeString(personalInfo.email),
+            location: toSafeString(personalInfo.location),
+            linkedin: toSafeString(personalInfo.linkedin),
+            website: toSafeString(personalInfo.website),
+        },
+        experience: experience.map((item) => ({
+            company: toSafeString(item?.company),
+            position: toSafeString(item?.position),
+            start_date: toSafeString(item?.start_date),
+            end_date: toSafeString(item?.end_date),
+            description: toSafeString(item?.description),
+            is_current: item?.is_current === true || item?.is_current === "true",
+        })),
+        project: project.map((item) => ({
+            name: toSafeString(item?.name),
+            type: toSafeString(item?.type),
+            description: toSafeString(item?.description),
+        })),
+        education: education.map((item) => ({
+            institution: toSafeString(item?.institution),
+            degree: toSafeString(item?.degree),
+            field: toSafeString(item?.field),
+            graduation_date: toSafeString(item?.graduation_date),
+            gpa: toSafeString(item?.gpa),
+        })),
+    };
+};
 
 export const enhanceProfessionalSummary= async(req,res)=>{
 
@@ -18,22 +64,12 @@ export const enhanceProfessionalSummary= async(req,res)=>{
             return res.status(400).json({message:"User content is required"});
         }
 
-        //call OpenAI API to enhance professional summary content
-
-        const response = await ai.chat.completions.create({
-            model: process.env.OPENAI_MODEL,
-
-            messages:[
-                {role:"system", content:"You are an expert resume writer. Your task is to enhance the professional summary content for a resume. You will receive the user's original content, and you need to improve it by making it more concise, impactful, and tailored for a resume. Focus on highlighting key skills, achievements, and experiences that would make the candidate stand out to potential employers.Make it compelling and suitable for a ATS friendly resume."},
-                {
-                    role:"user",
-                    content: userContent,
-                }
-            ]
-
-        })
-
-        const enhancedContent=response.choices[0].message.content;
+        const enhancedContent = await generateTextContent({
+            systemPrompt:
+                "You are an expert resume writer. Improve professional summaries for ATS-friendly resumes. Keep output concise, impactful, and achievement-focused.",
+            userPrompt: `Enhance this professional summary:\n\n${userContent}`,
+            temperature: 0.4,
+        });
 
         return res.status(200).json({enhancedContent});
 
@@ -60,22 +96,12 @@ export const enhanceJobDescription= async(req,res)=>{
             return res.status(400).json({message:"User content is required"});
         }
 
-        //call OpenAI API to enhance job description content
-
-        const response = await ai.chat.completions.create({
-            model: process.env.OPENAI_MODEL,
-
-            messages:[
-                {role:"system", content:"You are an expert resume writer. Your task is to enhance the job description content for a resume. You will receive the user's original content, and you need to improve it by making it more concise, impactful, and tailored for a resume. Focus on highlighting key responsibilities, achievements, and skills that would make the candidate stand out to potential employers. Make it compelling and suitable for a ATS friendly resume."},
-                {
-                    role:"user",
-                    content: userContent,
-                }
-            ]
-
-        })
-
-        const enhancedContent=response.choices[0].message.content;
+        const enhancedContent = await generateTextContent({
+            systemPrompt:
+                "You are an expert resume writer. Improve job descriptions with concise, measurable achievements and ATS-friendly wording.",
+            userPrompt: `Enhance this job description:\n\n${userContent}`,
+            temperature: 0.4,
+        });
 
         return res.status(200).json({enhancedContent});
 
@@ -102,86 +128,60 @@ export const uploadResume= async(req,res)=>{
             return res.status(400).json({message:"Resume text and title are required"});
         }
 
-        const  systemPrompt="You are an expert ai agent to extract data from resume and store it in database. You will receive the resume text and you need to extract key information such as name, contact details, professional summary, work experience, education, skills, and any other relevant sections. The extracted data should be structured in a way that can be easily stored in a database and used for generating resumes. Focus on accuracy and completeness while extracting the information from the resume text.";
+        const MAX_RESUME_CHARS = 18000;
+        const trimmedResumeText = String(resumeText).slice(0, MAX_RESUME_CHARS);
 
-        const userPrompt=`extract data from this resume: ${resumeText}
-        
-        Provide data in the following json format with no additional text before or after:
-        
-        professional_summary:{type:String, default:""},
-        skills :[{type:String}],
+        const systemPrompt =
+            "Extract structured resume data into valid JSON only. Use empty strings for missing text fields, false for missing booleans, and empty arrays for missing lists.";
 
-        personal_info:{
-        image:{type:String, default:""},
-        full_name:{type:String, default:""},
-        profession:{type:String, default:""},
-        phone:{type:String, default:""},
-        email:{type:String, default:""},
-        location:{type:String, default:""},
-        linkedin:{type:String, default:""},
-        website:{type:String, default:""},
+        const userPrompt = [
+            "Read the resume text and return JSON with this exact shape:",
+            "{",
+            '  "professional_summary": "",',
+            '  "skills": [""],',
+            '  "personal_info": {',
+            '    "image": "",',
+            '    "full_name": "",',
+            '    "profession": "",',
+            '    "phone": "",',
+            '    "email": "",',
+            '    "location": "",',
+            '    "linkedin": "",',
+            '    "website": ""',
+            "  },",
+            '  "experience": [{',
+            '    "company": "",',
+            '    "position": "",',
+            '    "start_date": "",',
+            '    "end_date": "",',
+            '    "description": "",',
+            '    "is_current": false',
+            "  }],",
+            '  "project": [{',
+            '    "name": "",',
+            '    "type": "",',
+            '    "description": ""',
+            "  }],",
+            '  "education": [{',
+            '    "institution": "",',
+            '    "degree": "",',
+            '    "field": "",',
+            '    "graduation_date": "",',
+            '    "gpa": ""',
+            "  }]",
+            "}",
+            "",
+            "Resume text:",
+            trimmedResumeText,
+        ].join("\n");
 
-        },
+        const extractedData = await generateJsonContent({
+            systemPrompt,
+            userPrompt,
+            temperature: 0.2,
+        });
 
-        experience:[
-        {
-            company:{type:String, default:""},
-            position:{type:String, default:""},
-            start_date:{type:String, default:""},
-            end_date:{type:String, default:""},
-            description:{type:String, default:""},
-            is_current:{type:Boolean, default:false},
-        }
-        ],
-
-        project:[
-        {
-            name:{type:String, default:""},
-            type:{type:String, default:""},
-            description:{type:String, default:""},
-        }
-        ],
-
-        education:[
-        {
-            institution:{type:String, default:""},
-            degree:{type:String, default:""},
-            field:{type:String, default:""},
-            graduation_date:{type:String, default:""},
-            gpa:{type:String, default:""},
-        }
-
-        
-        `
-
-              
-
-        //call OpenAI API to enhance job description content
-
-        const response = await ai.chat.completions.create({
-            model: process.env.OPENAI_MODEL,
-
-            messages:[
-                {
-                    role:"system", 
-                    content:systemPrompt
-                },
-                {
-                    role:"user",
-                    content: userPrompt,
-                }
-            ],
-
-            response_format:{
-                type:"json_object",
-            }
-
-        })
-
-        const extractedData=response.choices[0].message.content;
-
-        //store extracted data in database
-        const parsedData=JSON.parse(extractedData);
+        const parsedData = normalizeResumeData(extractedData);
 
         const newResume= await Resume.create({
             userId,
@@ -195,12 +195,7 @@ export const uploadResume= async(req,res)=>{
 
     catch(error){
 
-        const providerMessage =
-            error?.error?.message ||
-            error?.response?.data?.error?.message ||
-            error?.message;
-
-        return res.status(500).json({message:"Failed to upload resume",error:providerMessage});
+        return res.status(500).json({message:"Failed to upload resume",error:error.message});
 
     }
 
