@@ -131,6 +131,10 @@ const Dashboard =()=>{
     //for actual data
 
     const confirmDelete = window.confirm("Are you sure you want to delete this resume?")
+    if(!confirmDelete){
+      return;
+    }
+
     try{
 
       const {data} = await api.delete(`/api/resumes/delete/${resumeId}`, {headers:{Authorization:token}})

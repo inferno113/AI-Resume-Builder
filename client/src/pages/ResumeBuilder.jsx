@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { dummyResumeData } from "../assets/assets";
 import { Link } from "react-router-dom";
-import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkle, Sparkles, User } from "lucide-react";
+import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from "lucide-react";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ResumePreview from "../components/ResumePreview";
 import TemplateSelector from "../components/TemplateSelector";
@@ -119,15 +118,20 @@ const ResumeBuilder =()=>{
 
   const handlShare =()=>{
 
-    const frontendUrl = window.location.href.split('/app')[0];
-    const resumeUrl = frontendUrl + `/app/view/${resumeId}`;
+    const resumeUrl = `${window.location.origin}/view/${resumeId}`;
 
     if(navigator.share){
-      navigator.share({url: resumeUrl, title: resumeData.title})
+      navigator.share({url: resumeUrl, title: resumeData.title}).catch(()=>{});
+      return;
     }
-    else{
-      alert("Sharing is not supported in this browser.")
+
+    if(navigator.clipboard?.writeText){
+      navigator.clipboard.writeText(resumeUrl);
+      toast.success("Public link copied to clipboard");
+      return;
     }
+
+    window.prompt("Copy this public resume link:", resumeUrl);
 
   }
 

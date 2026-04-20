@@ -5,10 +5,8 @@ import { Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import Preview from "./pages/Preview";
-import Login from "./pages/Login";
 import Layout from "./pages/Layout";
 import { useDispatch } from "react-redux";
-import { Axis3DIcon } from "lucide-react";
 import api from "./configs/api";
 import { login, setLoading } from "./app/features/authSlice";
 import {Toaster} from "react-hot-toast";
@@ -24,7 +22,7 @@ const App =()=>{
     try{
 
       if(token){
-        const {data}=await api.get('/api/user/data',{headers:{Authorization:`Bearer ${token}`}});
+        const {data}=await api.get('/api/users/data',{headers:{Authorization:`Bearer ${token}`}});
 
         if(data.user){
           dispatch(login({token,user:data.user}));
