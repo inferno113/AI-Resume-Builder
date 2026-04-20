@@ -22,6 +22,13 @@ const Login =()=>{
         password: ''
     })
 
+    const [isDemoLoading, setIsDemoLoading] = React.useState(false);
+
+    const demoAccount = {
+        email: 'user@example.com',
+        password: '12345678',
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -55,6 +62,20 @@ const Login =()=>{
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
     }
+
+    const handleDemoLogin = async () => {
+        try {
+            setIsDemoLoading(true);
+            const { data } = await api.post('/api/users/login', demoAccount);
+            dispatch(login(data));
+            localStorage.setItem('token', data.token);
+            toast.success('Logged in with demo account');
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message || 'Demo login failed');
+        } finally {
+            setIsDemoLoading(false);
+        }
+    };
     
   
     return(
@@ -208,6 +229,20 @@ const Login =()=>{
                                     {isRegister ? "Create account" : "Sign in"}
                                 </button>
                             </form>
+
+                            {!isRegister && (
+                                <div className="mt-3 rounded-lg bg-slate-100 p-3">
+                                    <p className="text-xs text-slate-500 mb-2 text-center">Demo Account Login</p>
+                                    <button
+                                        type="button"
+                                        onClick={handleDemoLogin}
+                                        disabled={isDemoLoading}
+                                        className="w-full h-11 rounded-lg bg-white hover:bg-slate-50 transition-colors text-slate-700 font-medium border border-slate-200 disabled:opacity-60"
+                                    >
+                                        {isDemoLoading ? 'Logging in...' : 'Login with Demo Account'}
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="mt-4 flex items-center justify-center gap-1 text-sm text-slate-600">
                                 <span>{isRegister ? "Already have an account?" : "Don't have an account?"}</span>
